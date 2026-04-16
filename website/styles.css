@@ -1,0 +1,56 @@
+/* ===== DESIGN TOKENS ===== */
+:root {
+  --orange: #c0532a;
+  --orange-deep: #9a3f1d;
+  --green: #2f4a31;
+  --green-deep: #1e3220;
+  --brown: #3a2418;
+  --cream: #f4ede0;
+  --cream-warm: #ebe1cd;
+  --ink: #2a1c14;
+  --serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --sans: 'Inter Tight', system-ui, sans-serif;
+
+  --bg: var(--cream);
+  --bg-alt: var(--cream-warm);
+  --text: var(--ink);
+  --text-soft: var(--brown);
+  --accent: var(--orange);
+  --accent-soft: #e89b73;
+  --primary: var(--green);
+  --border: rgba(58, 36, 24, 0.12);
+  --border-strong: rgba(58, 36, 24, 0.15);
+  --card-bg: var(--cream);
+  --footer-bg: var(--brown);
+}
+
+/* ===== RESET ===== */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+/* ===== BASE BODY ===== */
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(192,83,42,0.04) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(47,74,49,0.04) 0%, transparent 40%);
+}
+
+/* ===== UTILITY: VISUALLY HIDDEN ===== */
+/* Keeps elements out of view but reachable by keyboard and screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Book Your Package — Chicago Pumpkin Authority</title>
+<meta name="description" content="Book your premium porch pumpkin display in Lincoln Park. Pick your package, choose your date, and we handle the rest." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter+Tight:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<style>
+  /* ===== LAYOUT ===== */
+  .page-wrapper {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 32px 24px 60px;
+  }
+
+  /* ===== BACK LINK ===== */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    text-decoration: none;
+    margin-bottom: 24px;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--accent); }
+  .back-link svg { width: 16px; height: 16px; }
+
+  /* ===== HEADER ===== */
+  .page-header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .page-header h1 {
+    font-family: var(--serif);
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 500;
+    line-height: 1.15;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  .page-header p {
+    font-size: 15px;
+    color: var(--text-soft);
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* ===== PROGRESS BAR ===== */
+  .progress-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 32px;
+  }
+  .progress-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: rgba(58, 36, 24, 0.55);
+    transition: color 0.3s;
+  }
+  .progress-step.active { color: var(--accent); }
+  .progress-step.done { color: var(--primary); }
+  .progress-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--border-strong);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+  .progress-step.active .progress-dot {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--bg);
+  }
+  .progress-step.done .progress-dot {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: var(--bg);
+  }
+  .progress-line {
+    width: 48px;
+    height: 2px;
+    background: var(--border-strong);
+    margin: 0 12px;
+    transition: background 0.3s;
+  }
+  .progress-line.done { background: var(--primary); }
+
+  /* ===== FORM SECTIONS ===== */
+  .form-section {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 32px;
+    margin-bottom: 24px;
+  }
+  .form-section h2 {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .form-section .section-desc {
+    font-size: 13px;
+    color: var(--text-soft);
+    margin-bottom: 24px;
+  }
+
+  /* ===== PACKAGE SELECTOR ===== */
+  .package-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .package-option {
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+  }
+  .package-option:hover {
+    border-color: var(--accent-soft);
+    background: rgba(192, 83, 42, 0.03);
+  }
+  .package-option:has(input:checked) {
+    border-color: var(--accent);
+    background: rgba(192, 83, 42, 0.06);
+  }
+  .package-option:has(input:focus-visible) {
+    outline: 3px solid var(--accent-soft);
+    outline-offset: 2px;
+  }
+
+  .radio-circle {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--border-strong);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .package-option:has(input:checked) .radio-circle {
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+  .radio-circle::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .package-option:has(input:checked) .radio-circle::after { opacity: 1; }
+
+  .package-info { flex: 1; }
+  .package-info .pkg-name {
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+  .package-info .pkg-details {
+    font-size: 12px;
+    color: var(--text-soft);
+    line-height: 1.5;
+  }
+  .package-info .pkg-price {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .pkg-badge {
+    position: absolute;
+    top: -10px;
+    right: 16px;
+    background: var(--primary);
+    color: var(--bg);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 3px;
+  }
+
+  /* ===== ADD-ONS ===== */
+  .addon-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .addon-item {
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .addon-item:hover {
+    border-color: var(--accent-soft);
+    background: rgba(192, 83, 42, 0.03);
+  }
+  .addon-item:has(input:checked) {
+    border-color: var(--accent);
+    background: rgba(192, 83, 42, 0.06);
+  }
+  .addon-item:has(input:focus-visible) {
+    outline: 3px solid var(--accent-soft);
+    outline-offset: 2px;
+  }
+
+  .check-box {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    border: 2px solid var(--border-strong);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .addon-item:has(input:checked) .check-box {
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+  .check-box svg {
+    width: 14px;
+    height: 14px;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .addon-item:has(input:checked) .check-box svg { opacity: 1; }
+
+  .addon-info { flex: 1; }
+  .addon-info .addon-name {
+    font-weight: 500;
+    font-size: 15px;
+    margin-bottom: 2px;
+  }
+  .addon-info .addon-desc {
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+  .addon-price {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  /* ===== TEXT INPUTS ===== */
+  label.field-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  textarea,
+  select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 6px;
+    font-family: var(--sans);
+    font-size: 15px;
+    color: var(--text);
+    background: white;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(192, 83, 42, 0.15);
+  }
+  input[aria-invalid="true"],
+  textarea[aria-invalid="true"] {
+    border-color: #c0392b;
+  }
+  textarea { resize: vertical; min-height: 80px; }
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .field-group { margin-bottom: 20px; }
+  .field-group:last-child { margin-bottom: 0; }
+
+  /* ===== CALENDAR PLACEHOLDER ===== */
+  .calendar-placeholder {
+    border: 2px dashed var(--border-strong);
+    border-radius: 8px;
+    padding: 40px 24px;
+    text-align: center;
+    color: var(--text-soft);
+  }
+  .calendar-placeholder svg {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 12px;
+    color: var(--accent-soft);
+  }
+  .calendar-placeholder p {
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  .calendar-placeholder .cal-note {
+    font-size: 12px;
+    opacity: 0.7;
+  }
+
+  /* ===== CONSENT / RADIO ROW ===== */
+  .consent-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 0;
+    cursor: pointer;
+  }
+  .consent-check {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--border-strong);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    margin-top: 1px;
+  }
+  .consent-row:has(input:checked) .consent-check {
+    border-color: var(--primary);
+    background: var(--primary);
+  }
+  .consent-row:has(input:focus-visible) .consent-check {
+    outline: 3px solid var(--accent-soft);
+    outline-offset: 2px;
+  }
+  .consent-check::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .consent-row:has(input:checked) .consent-check::after { opacity: 1; }
+  .consent-text {
+    font-size: 14px;
+    color: var(--text-soft);
+    line-height: 1.5;
+  }
+
+  /* ===== ORDER SUMMARY ===== */
+  .order-summary {
+    background: var(--primary);
+    color: var(--bg);
+    border-radius: 8px;
+    padding: 32px;
+    margin-bottom: 24px;
+  }
+  .order-summary h2 {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    color: var(--bg);
+  }
+  .summary-line {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(244, 237, 224, 0.15);
+  }
+  .summary-line:last-of-type { border-bottom: none; }
+  .summary-line .label { opacity: 0.85; }
+  .summary-line .value { font-weight: 500; }
+  .summary-total {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 16px;
+    margin-top: 8px;
+    border-top: 2px solid rgba(244, 237, 224, 0.3);
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .summary-total .total-price {
+    font-family: var(--serif);
+    font-size: 24px;
+  }
+
+  /* ===== CTA BUTTON ===== */
+  .btn-primary {
+    display: block;
+    width: 100%;
+    padding: 18px 32px;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.25s;
+    text-align: center;
+  }
+  .btn-primary:hover {
+    background: var(--orange-deep);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(192, 83, 42, 0.3);
+  }
+  .btn-primary:focus-visible {
+    outline: 3px solid var(--accent-soft);
+    outline-offset: 2px;
+  }
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .form-error {
+    background: rgba(192, 57, 43, 0.08);
+    border: 1px solid rgba(192, 57, 43, 0.3);
+    color: #8a2a1f;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+  .form-error[hidden] { display: none; }
+
+  .secure-note {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-soft);
+    margin-top: 16px;
+    opacity: 0.7;
+  }
+
+  /* ===== FOOTER ===== */
+  .page-footer {
+    text-align: center;
+    padding: 32px 24px;
+    font-size: 12px;
+    color: var(--text-soft);
+    opacity: 0.6;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 600px) {
+    .page-wrapper { padding: 32px 16px 60px; }
+    .form-section { padding: 24px 18px; }
+    .order-summary { padding: 24px 18px; }
+    .field-row { grid-template-columns: 1fr; }
+    .package-option { flex-wrap: wrap; gap: 10px; padding: 16px; }
+    .pkg-price { width: 100%; text-align: right; }
+    .progress-step span { display: none; }
+    .progress-line { width: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Back to main site -->
+  <a href="index.html" class="back-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Back to packages
+  </a>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1>Book Your Pumpkin Display</h1>
+    <p>Fill out the details below and we'll handle the rest. The whole process takes about two minutes.</p>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar">
+    <div class="progress-step active" data-step="1">
+      <div class="progress-dot">1</div>
+      <span>Details</span>
+    </div>
+    <div class="progress-line"></div>
+    <div class="progress-step" data-step="2">
+      <div class="progress-dot">2</div>
+      <span>Schedule</span>
+    </div>
+    <div class="progress-line"></div>
+    <div class="progress-step" data-step="3">
+      <div class="progress-dot">3</div>
+      <span>Payment</span>
+    </div>
+  </div>
+
+  <form id="booking-form" novalidate>
+
+    <!-- ==================== STEP 1: DETAILS ==================== -->
+    <div id="step-1">
+
+      <!-- SECTION: Choose Your Package -->
+      <div class="form-section">
+        <h2>Choose Your Package</h2>
+        <p class="section-desc">Select the display that fits your porch. Not sure? Go with The Signature — it's our most popular for Lincoln Park brownstones.</p>
+
+        <div class="package-options" role="radiogroup" aria-label="Pumpkin package">
+
+          <label class="package-option" data-package="classic" data-price="449">
+            <input class="sr-only" type="radio" name="package" value="classic" />
+            <span class="radio-circle" aria-hidden="true"></span>
+            <span class="package-info">
+              <span class="pkg-name">The Classic</span>
+              <span class="pkg-details">24 pieces — heirlooms, oranges, white ghosts, minis &amp; a hay bale. Perfect for smaller porches &amp; townhomes.</span>
+            </span>
+            <span class="pkg-price">$449</span>
+          </label>
+
+          <label class="package-option" data-package="signature" data-price="649">
+            <input class="sr-only" type="radio" name="package" value="signature" />
+            <span class="radio-circle" aria-hidden="true"></span>
+            <span class="package-info">
+              <span class="pkg-name">The Signature</span>
+              <span class="pkg-details">36 pieces — heirlooms, oranges, ghosts, specialty pumpkins, minis &amp; 2 hay bales. Our best seller.</span>
+            </span>
+            <span class="pkg-price">$649</span>
+            <span class="pkg-badge">Most Popular</span>
+          </label>
+
+          <label class="package-option" data-package="grand" data-price="849">
+            <input class="sr-only" type="radio" name="package" value="grand" />
+            <span class="radio-circle" aria-hidden="true"></span>
+            <span class="package-info">
+              <span class="pkg-name">The Grand</span>
+              <span class="pkg-details">50 pieces — the full treatment with cornstalks, 3 hay bales &amp; specialty pumpkins. Statement-level display.</span>
+            </span>
+            <span class="pkg-price">$849</span>
+          </label>
+
+        </div>
+      </div>
+
+      <!-- SECTION: Add-Ons -->
+      <div class="form-section">
+        <h2>Add-Ons</h2>
+        <p class="section-desc">Optional extras to complete your fall look.</p>
+
+        <div class="addon-list">
+
+          <label class="addon-item">
+            <input class="sr-only" type="checkbox" name="addon-removal" value="75" />
+            <span class="check-box" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+            </span>
+            <span class="addon-info">
+              <span class="addon-name">Post-Season Pumpkin Removal</span>
+              <span class="addon-desc">We come back after the season and remove everything from your porch. No mess, no hassle.</span>
+            </span>
+            <span class="addon-price">+$75</span>
+          </label>
+
+          <label class="addon-item">
+            <input class="sr-only" type="checkbox" name="addon-haybale" value="15" />
+            <span class="check-box" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+            </span>
+            <span class="addon-info">
+              <span class="addon-name">Extra Hay Bale</span>
+              <span class="addon-desc">Add an additional hay bale to fill out a wider porch or staircase.</span>
+            </span>
+            <span class="addon-price">+$15</span>
+          </label>
+
+          <label class="addon-item">
+            <input class="sr-only" type="checkbox" name="addon-cornstalk" value="20" />
+            <span class="check-box" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+            </span>
+            <span class="addon-info">
+              <span class="addon-name">Extra Cornstalk Bundle</span>
+              <span class="addon-desc">Tall cornstalk bundles that lean against pillars or doorframes for extra autumn drama.</span>
+            </span>
+            <span class="addon-price">+$20</span>
+          </label>
+
+        </div>
+      </div>
+
+      <!-- SECTION: Your Info -->
+      <div class="form-section">
+        <h2>Your Information</h2>
+        <p class="section-desc">We'll use this to confirm your booking and coordinate delivery.</p>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="first-name">First Name</label>
+            <input type="text" id="first-name" name="first-name" placeholder="Jane" autocomplete="given-name" required />
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="last-name">Last Name</label>
+            <input type="text" id="last-name" name="last-name" placeholder="Smith" autocomplete="family-name" required />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="jane@example.com" autocomplete="email" required />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="phone">Phone</label>
+          <input type="tel" id="phone" name="phone" placeholder="(312) 555-0123" autocomplete="tel" required />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="address">Delivery Address</label>
+          <input type="text" id="address" name="address" placeholder="1234 N. Lincoln Ave, Chicago, IL 60614" autocomplete="street-address" required />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="notes">Special Requests or Porch Details (optional)</label>
+          <textarea id="notes" name="notes" placeholder="E.g. 'Front steps are narrow' or 'We have a double-wide porch' or any color preferences..."></textarea>
+        </div>
+      </div>
+
+      <!-- SECTION: Photo Consent -->
+      <div class="form-section">
+        <h2>Photo Permission</h2>
+        <p class="section-desc">We love showing off our work — but only with your permission.</p>
+
+        <div role="radiogroup" aria-label="Photo permission">
+          <label class="consent-row">
+            <input class="sr-only" type="radio" name="photo-consent" value="yes" />
+            <span class="consent-check" aria-hidden="true"></span>
+            <span class="consent-text">
+              <strong>Yes, you can photograph my finished display</strong> and use the photos on your website and social media. My address will never be shared.
+            </span>
+          </label>
+
+          <label class="consent-row">
+            <input class="sr-only" type="radio" name="photo-consent" value="no" />
+            <span class="consent-check" aria-hidden="true"></span>
+            <span class="consent-text">
+              <strong>No thanks</strong> — I'd prefer you don't take photos of my display.
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- SECTION: Schedule (Calendly placeholder) -->
+      <div class="form-section">
+        <h2>Pick Your Install Date</h2>
+        <p class="section-desc">Choose a day that works for you. We'll arrive within a 6-hour window and have your display set up in under an hour.</p>
+
+        <div class="calendar-placeholder" id="calendly-container">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <path d="M16 2v4M8 2v4M3 10h18" />
+            <circle cx="12" cy="16" r="1" fill="currentColor" />
+          </svg>
+          <p>Calendar loading...</p>
+          <p class="cal-note">When your Calendly is connected, the scheduling widget will appear here.</p>
+          <p class="cal-note" style="margin-top:12px; font-style:italic;">To connect: replace the placeholder below in the code with your Calendly embed link.</p>
+        </div>
+
+        <!--
+          ========================================================
+          HOW TO ADD YOUR CALENDLY:
+          ========================================================
+          1. Go to calendly.com and set up your event type
+             - Set availability to 6-hour windows (e.g. "Install Day")
+          2. Get your embed link from Calendly
+          3. Uncomment the lines below and replace YOUR_CALENDLY_LINK:
+
+          <div class="calendly-inline-widget" data-url="https://calendly.com/YOUR_CALENDLY_LINK" style="min-width:320px;height:630px;"></div>
+          <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+
+          4. Delete or hide the .calendar-placeholder div above
+          ========================================================
+        -->
+      </div>
+
+      <div class="form-error" id="step-1-error" hidden role="alert"></div>
+
+      <!-- CTA: Continue to next step (type=submit triggers form submit -> validation) -->
+      <button class="btn-primary" type="submit">
+        Review Your Order
+      </button>
+
+    </div>
+
+    <!-- ==================== STEP 2: SUMMARY ==================== -->
+    <div id="step-2" hidden>
+
+      <div class="order-summary">
+        <h2>Order Summary</h2>
+        <div id="summary-lines">
+          <!-- filled by JS -->
+        </div>
+        <div class="summary-total">
+          <span>Total</span>
+          <span class="total-price" id="summary-total">$0</span>
+        </div>
+      </div>
+
+      <!-- Customer details recap -->
+      <div class="form-section">
+        <h2>Delivery Details</h2>
+        <p class="section-desc" id="summary-customer">
+          <!-- filled by JS -->
+        </p>
+      </div>
+
+      <div style="display:flex; gap:12px;">
+        <button class="btn-primary" type="button" data-action="go-back" style="background:var(--text-soft); flex:1;">
+          Go Back &amp; Edit
+        </button>
+        <button class="btn-primary" type="button" data-action="proceed-payment" style="flex:2;">
+          Continue to Payment
+        </button>
+      </div>
+
+      <p class="secure-note">Payment processing coming soon. We'll reach out to confirm your booking.</p>
+    </div>
+
+  </form>
+
+  <div class="page-footer">
+    &copy; 2026 Chicago Pumpkin Authority &middot; Lincoln Park, Chicago
+  </div>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  const form = document.getElementById('booking-form');
+  const step1 = document.getElementById('step-1');
+  const step2 = document.getElementById('step-2');
+  const errorBox = document.getElementById('step-1-error');
+
+  // ===== PRE-SELECT PACKAGE FROM URL (?package=signature) =====
+  const preselected = new URLSearchParams(window.location.search).get('package');
+  if (preselected) {
+    const target = form.querySelector(`input[name="package"][value="${preselected}"]`);
+    if (target) target.checked = true;
+  }
+
+  // ===== VALIDATION =====
+  function validateStep1() {
+    const errors = [];
+    const requiredInputs = form.querySelectorAll('#step-1 input[required]');
+
+    // Clear prior errors
+    requiredInputs.forEach(el => el.removeAttribute('aria-invalid'));
+
+    const pkgChecked = form.querySelector('input[name="package"]:checked');
+    if (!pkgChecked) errors.push('Please select a package.');
+
+    requiredInputs.forEach(el => {
+      if (!el.value.trim()) {
+        el.setAttribute('aria-invalid', 'true');
+      }
+    });
+    if (form.querySelectorAll('#step-1 input[aria-invalid="true"]').length > 0) {
+      errors.push('Please fill in all required fields (name, email, phone, address).');
+    }
+
+    return errors;
+  }
+
+  function showErrors(errors) {
+    if (errors.length === 0) {
+      errorBox.hidden = true;
+      errorBox.textContent = '';
+      return;
+    }
+    errorBox.textContent = errors.join(' ');
+    errorBox.hidden = false;
+    errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // ===== BUILD SUMMARY =====
+  function buildSummary() {
+    const pkg = form.querySelector('input[name="package"]:checked');
+    const pkgOption = pkg.closest('.package-option');
+    const pkgName = pkgOption.querySelector('.pkg-name').textContent;
+    const pkgPrice = parseInt(pkgOption.dataset.price, 10);
+
+    let total = pkgPrice;
+    let lines = `<div class="summary-line"><span class="label">${pkgName}</span><span class="value">$${pkgPrice}</span></div>`;
+
+    form.querySelectorAll('input[name^="addon-"]:checked').forEach(addon => {
+      const addonItem = addon.closest('.addon-item');
+      const name = addonItem.querySelector('.addon-name').textContent;
+      const price = parseInt(addon.value, 10);
+      total += price;
+      lines += `<div class="summary-line"><span class="label">${name}</span><span class="value">+$${price}</span></div>`;
+    });
+
+    document.getElementById('summary-lines').innerHTML = lines;
+    document.getElementById('summary-total').textContent = `$${total}`;
+
+    const firstName = form.elements['first-name'].value.trim();
+    const lastName  = form.elements['last-name'].value.trim();
+    const email     = form.elements['email'].value.trim();
+    const phone     = form.elements['phone'].value.trim();
+    const address   = form.elements['address'].value.trim();
+
+    const photoChoice = form.querySelector('input[name="photo-consent"]:checked');
+    const photoStatus = !photoChoice
+      ? 'Photo preference not selected'
+      : photoChoice.value === 'yes' ? 'Photo permission granted' : 'No photo permission';
+
+    // Plain-text escape for user-entered fields to avoid HTML injection
+    const esc = s => s.replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+
+    document.getElementById('summary-customer').innerHTML =
+      `<strong>${esc(firstName)} ${esc(lastName)}</strong><br>` +
+      `${esc(email)} &middot; ${esc(phone)}<br>` +
+      `${esc(address)}<br><br>` +
+      `<em>${photoStatus}</em>`;
+  }
+
+  // ===== STEP NAVIGATION =====
+  function goToSummary() {
+    const errors = validateStep1();
+    if (errors.length) { showErrors(errors); return; }
+    showErrors([]);
+
+    buildSummary();
+
+    step1.hidden = true;
+    step2.hidden = false;
+
+    document.querySelector('[data-step="1"]').classList.remove('active');
+    document.querySelector('[data-step="1"]').classList.add('done');
+    document.querySelector('.progress-line').classList.add('done');
+    document.querySelector('[data-step="2"]').classList.add('active');
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function goBack() {
+    step2.hidden = true;
+    step1.hidden = false;
+
+    document.querySelector('[data-step="1"]').classList.add('active');
+    document.querySelector('[data-step="1"]').classList.remove('done');
+    document.querySelector('.progress-line').classList.remove('done');
+    document.querySelector('[data-step="2"]').classList.remove('active');
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function proceedToPayment() {
+    alert("Payment integration coming soon! For now, we'll reach out via email to confirm your booking and arrange payment.");
+  }
+
+  // ===== EVENT DELEGATION =====
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    goToSummary();
+  });
+
+  form.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    const action = btn.dataset.action;
+    if (action === 'go-back') goBack();
+    else if (action === 'proceed-payment') proceedToPayment();
+  });
+
+  // Clear a field's error state as the user types
+  form.addEventListener('input', (e) => {
+    if (e.target.matches('input[required], textarea[required]')) {
+      if (e.target.value.trim()) e.target.removeAttribute('aria-invalid');
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
