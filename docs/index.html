@@ -910,6 +910,34 @@
     margin-top: 12px;
   }
 
+  /* ---------- HAMBURGER BUTTON (hidden on desktop) ---------- */
+  .nav-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    z-index: 60;
+  }
+  .nav-toggle span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--text);
+    margin: 5px 0;
+    border-radius: 2px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  .nav-toggle.active span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .nav-toggle.active span:nth-child(2) {
+    opacity: 0;
+  }
+  .nav-toggle.active span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
   /* ---------- RESPONSIVE ---------- */
   /* ---------- TABLET (≤ 880px) ---------- */
   @media (max-width: 880px) {
@@ -918,8 +946,6 @@
     .hero-grid { grid-template-columns: 1fr; gap: 40px; }
     .hero-logo { max-width: 280px; margin-bottom: 48px; }
 
-    /* Carousel: switch to a wider ratio on smaller screens
-       since it now spans the full width */
     .carousel { aspect-ratio: 4 / 3; max-height: 480px; }
 
     .how, .packages, .why, .closing { padding: 80px 0; }
@@ -939,12 +965,108 @@
     .section-title { margin-bottom: 48px; }
   }
 
+  /* ---------- MOBILE NAV + LAYOUT (≤ 768px) ---------- */
+  @media (max-width: 768px) {
+    /* Show hamburger button */
+    .nav-toggle {
+      display: block;
+    }
+
+    /* Nav links become a dropdown menu */
+    .nav-links {
+      display: none;
+      position: absolute;
+      top: 56px;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      align-items: stretch;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 24px;
+      gap: 0;
+      box-shadow: 0 8px 24px rgba(58, 36, 24, 0.12);
+      z-index: 50;
+    }
+    .nav-links.nav-open {
+      display: flex;
+    }
+    .nav-links li {
+      list-style: none;
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-links li:last-child {
+      border-bottom: none;
+    }
+    .nav-links a {
+      display: block;
+      padding: 14px 0;
+      font-size: 16px;
+      min-height: 44px;
+      text-align: left;
+      border-bottom: none;
+      border-radius: 0;
+    }
+    .nav-links .nav-cta {
+      margin: 8px 0;
+      text-align: center;
+      padding: 14px 20px;
+      min-height: 44px;
+      border-radius: 6px;
+    }
+
+    /* Hide decorative border lines on mobile */
+    body::before,
+    body::after {
+      display: none;
+    }
+
+    /* Season notice: flow inline instead of absolute positioning */
+    .season-notice {
+      position: relative;
+      top: auto;
+      right: auto;
+      margin: 16px 16px 0;
+      font-size: 13px;
+      padding: 10px 18px;
+      white-space: normal;
+    }
+
+    /* Fix hero logo negative margin pushing it off-screen */
+    .logo-wrap {
+      margin-left: 0;
+      max-width: 280px;
+    }
+
+    /* FAQ list: reduce horizontal padding */
+    .faq-list {
+      padding: 12px 20px;
+    }
+
+    /* Ensure all buttons meet 44px min touch target */
+    .btn {
+      min-height: 44px;
+      padding: 14px 28px;
+    }
+    .faq-question {
+      min-height: 44px;
+      padding: 8px 0;
+    }
+
+    /* Footer link touch target */
+    .footer-ig {
+      display: inline-block;
+      min-height: 44px;
+      line-height: 44px;
+    }
+  }
+
   /* ---------- PHONE (≤ 520px) ---------- */
   @media (max-width: 520px) {
     .container { padding: 0 16px; }
     .hero { padding: 24px 0 56px; }
     .carousel { aspect-ratio: 1 / 1; max-height: 400px; }
-    .carousel-arrow { width: 38px; height: 38px; font-size: 18px; }
+    .carousel-arrow { width: 44px; height: 44px; font-size: 18px; }
     .carousel-arrow.prev { left: 8px; }
     .carousel-arrow.next { right: 8px; }
     .carousel-thumb { width: 48px; height: 48px; border-radius: 6px; }
@@ -958,10 +1080,18 @@
     .section-title { margin-bottom: 36px; }
     .package-body { padding: 24px 24px 32px; }
 
-    .nav-links { gap: 16px; }
-    .nav-links a { font-size: 12px; }
+    .logo-wrap {
+      max-width: 220px;
+    }
 
+    .faq-list {
+      padding: 12px 16px;
+    }
 
+    .season-notice {
+      font-size: 12px;
+      padding: 8px 14px;
+    }
   }
 </style>
 </head>
@@ -972,6 +1102,9 @@
   <nav class="site-nav">
     <div class="container">
       <a href="#" class="nav-logo">Chicago Pumpkin Authority</a>
+      <button class="nav-toggle" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
       <ul class="nav-links">
         <li><a href="#about">About Us</a></li>
         <li><a href="#packages">Packages</a></li>
@@ -1267,6 +1400,25 @@
       prevBtn.addEventListener('click', () => goTo(current - 1));
       dots.forEach((dot, i) => {
         dot.addEventListener('click', () => goTo(i));
+      });
+    })();
+
+    // Mobile hamburger menu toggle
+    (function() {
+      var toggle = document.querySelector('.nav-toggle');
+      var navLinks = document.querySelector('.nav-links');
+      toggle.addEventListener('click', function() {
+        var isOpen = navLinks.classList.toggle('nav-open');
+        toggle.classList.toggle('active', isOpen);
+        toggle.setAttribute('aria-expanded', isOpen);
+      });
+      // Close menu when a nav link is clicked
+      navLinks.querySelectorAll('a').forEach(function(link) {
+        link.addEventListener('click', function() {
+          navLinks.classList.remove('nav-open');
+          toggle.classList.remove('active');
+          toggle.setAttribute('aria-expanded', 'false');
+        });
       });
     })();
 
